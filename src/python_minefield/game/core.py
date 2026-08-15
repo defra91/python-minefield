@@ -131,11 +131,27 @@ def init_game(config):
         mines = count_adjacent_mines(i, real_board, config["rows"], config["cols"])
 
         if mines > 0:
-            color = NUM_COLORS[mines]
-            real_board[i] = f"{color}{mines}{RESET}"
+            real_board[i] = mines
         else:
             real_board[i] = SPACE
 
     flood_fill(start_point, real_board, visible_board, config["rows"], config["cols"])
 
     return real_board, visible_board
+
+def chording(i, real_board, visible_board, rows, cols):
+    if (real_board[i] == SPACE) or (real_board[i] == MINE) or (visible_board[i] == COVERED) or (visible_board[i] == FLAG):
+        return
+
+    r, c = get_board_coords(i, rows)
+
+    adjacent_indices = get_adjacent_indices(i, rows, cols)
+
+    flagged_count = sum(1 for idx in adjacent_indices if visible_board[idx] == FLAG)
+
+    if flagged_count == int(real_board[i]):
+        for idx in adjacent_indices:
+            if visible_board[idx] == COVERED:
+                visible_board[idx] = real_board[idx]
+                if real_board[idx] == SPACE:
+                    flood_fill(idx, real_board, visible_board, rows, cols)

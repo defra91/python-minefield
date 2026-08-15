@@ -1,7 +1,16 @@
 import time
 
-from .game.config import COVERED, DIFFICULTIES, FLAG, SPACE
-from .game.core import init_game, select_difficulty, check_victory, check_defeat, flood_fill, get_key, get_player_name
+from .game.config import COVERED, DIFFICULTIES, FLAG, SPACE, MINE
+from .game.core import (
+    init_game,
+    select_difficulty,
+    check_victory,
+    check_defeat,
+    flood_fill,
+    get_key,
+    get_player_name,
+    chording,
+)
 from .game.storage import save_game, load_game
 
 from .game.terminal import clear_screen, hide_cursor, show_cursor
@@ -78,6 +87,11 @@ def main():
         elif key == "ENTER":
             visible_board[cursor_idx] = real_board[cursor_idx]
 
+            if real_board[cursor_idx] == SPACE:
+                flood_fill(cursor_idx, real_board, visible_board, board_rows, board_cols)
+            elif real_board[cursor_idx] != MINE:
+                chording(cursor_idx, real_board, visible_board, board_rows, board_cols)
+
             if check_victory(real_board, visible_board):
                 display_board(real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
                 message = f"{GREEN}Victory is yours!!!{RESET}"
@@ -86,14 +100,6 @@ def main():
                 display_board(real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
                 message = f"{RED}Ahhhhhhhhhhhhhhh{RESET}"
                 exit = True
-            elif real_board[cursor_idx] != SPACE:
-                visible_board[cursor_idx] = real_board[cursor_idx]
-            else:
-                flood_fill(cursor_idx, real_board, visible_board, board_rows, board_cols)
-                if check_victory(real_board, visible_board):
-                    display_board(real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
-                    message = f"{GREEN}Victory is yours!!!{RESET}"
-                    exit = True
 
         elif key == "ESC":
             message = f"{GRAY}Exiting...{RESET}"

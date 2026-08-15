@@ -3,7 +3,8 @@
 import sys
 
 from .colors import GRAY, RESET, CURSOR_STYLE, RED, BLUE, LIGHT_GRAY, BOLD
-from .config import SPACE, MINE
+from .config import SPACE, MINE, NUM_COLORS
+from .math import is_float
 from . import terminal as terminal
 
 L_CORNER_TOP = f"{GRAY}╔{RESET}"
@@ -118,6 +119,10 @@ def display_board(board, cols, rows, cell_w, cell_h, cursor_idx):
                     c = board[index]
                     if c == "":
                         c = SPACE
+                    if is_float(c):
+                        c = int(c)
+                        color = NUM_COLORS[int(c)]
+                        c = f"{color}{c}{RESET}"
 
                     if index == cursor_idx:
                         contents[col_idx] = f"{CURSOR_STYLE}{c}{RESET}"

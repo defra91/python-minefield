@@ -8,7 +8,6 @@ import tty
 HIDE_CURSOR = "\033[?25l"
 SHOW_CURSOR = "\033[?25h"
 
-
 def hide_cursor():
     sys.stdout.write(HIDE_CURSOR)
     sys.stdout.flush()
