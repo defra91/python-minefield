@@ -1,10 +1,12 @@
+import random
 import sys
 from collections import deque
 
 from .math import get_board_coords, NEIGHBORS_OFFSET
-from .config import MINE, SPACE, COVERED, DIFFICULTIES
+from .math import random_int, get_adjacent_indices, get_board_coords
+from .config import FLAG, FLAG, MINE, NUM_COLORS, SPACE, COVERED, DIFFICULTIES
 from .colors import BOLD, CURSOR_STYLE, GRAY, RESET
-from .terminal import get_key
+from .terminal import get_key, hide_cursor, show_cursor
 
 def count_adjacent_mines(i, board, board_rows, board_cols):
     r, c = get_board_coords(i, board_cols)
@@ -78,10 +80,62 @@ def select_difficulty() -> str:
             return keys[cursor]
 
 def check_victory(real_board, visible_board) -> bool:
-    victory = True
+    for i, cell in enumerate(real_board):
+        if cell != MINE:
+            if visible_board[i] in (COVERED, FLAG):
+                return False
+
+    return True
+
+def check_defeat(real_board, visible_board) -> bool:
+    defeat = False
     for i, cell in enumerate(real_board):
         vcell = visible_board[i]
-        if (cell != MINE and vcell != cell):
-            victory = False
+        if (cell == MINE and vcell == MINE):
+            defeat = True
         
-    return victory
+    return defeat
+
+def get_player_name() -> str:
+    show_cursor()
+    player_name = input("Insert your name: ").strip()
+    hide_cursor()
+    return player_name if player_name else "Player"
+
+def init_game(config):
+    real_board = []
+    visible_board = []
+    
+    board_size = config["rows"] * config["cols"]
+    mines_cnt = max(1, round(board_size * config["percent"]))
+
+    for i in range(config["cols"]):
+        for _ in range(config["rows"]):
+            real_board.append(SPACE)
+            visible_board.append(COVERED)
+
+    start_point = random_int(0, board_size - 1)
+    forbidden_points = get_adjacent_indices(start_point, config["rows"], config["cols"])
+    forbidden_points.append(start_point) 
+
+    allowed_indices = [i for i in range(board_size) if i not in forbidden_points]
+
+    mine_indices = random.sample(allowed_indices, mines_cnt)
+    for idx in mine_indices:
+        real_board[idx] = MINE
+
+    for i, cell in enumerate(real_board):
+        if cell == MINE:
+            continue
+
+        mines = count_adjacent_mines(i, real_board, config["rows"], config["cols"])
+
+        if mines > 0:
+            color = NUM_COLORS[mines]
+            real_board[i] = f"{color}{mines}{RESET}"
+        else:
+            real_board[i] = SPACE
+
+    flood_fill(start_point, real_board, visible_board, config["rows"], config["cols"])
+
+    return real_board, visible_board

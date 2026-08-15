@@ -4,7 +4,7 @@ from .colors import RED, GRAY, RESET, BLUE_FLAG
     
 SPACE        = f"{GRAY} {RESET}"
 COVERED      = f"{GRAY}■{RESET}"
-FLAG         = f"{BLUE_FLAG}⚑{RESET}"
+FLAG         = f"{RED}⚑{RESET}"
 MINE         = f"{RED}*{RESET}"
 
 NUM_COLORS = {

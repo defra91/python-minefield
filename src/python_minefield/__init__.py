@@ -1,9 +1,10 @@
-import random
+import time
+
+from .game.config import COVERED, DIFFICULTIES, FLAG, SPACE
+from .game.core import init_game, select_difficulty, check_victory, check_defeat, flood_fill, get_key, get_player_name
+from .game.storage import save_game, load_game
 
 from .game.terminal import clear_screen, hide_cursor, show_cursor
-from .game.core import select_difficulty, check_victory, count_adjacent_mines, flood_fill, get_key
-from .game.math import random_int, get_adjacent_indices
-from .game.config import COVERED, DIFFICULTIES, FLAG, MINE, NUM_COLORS, SPACE
 from .game.colors import GRAY, GREEN, RED, RESET
 from .game.board import display_board
 
@@ -18,51 +19,41 @@ def main():
     real_board = []
     visible_board = []
 
-    chosen_difficulty = select_difficulty()
-    clear_screen()
+    player_name = get_player_name()
+    game = load_game(player_name)
+    current_game = game.get("current_game") if game else None
+    stats = game.get("stats") if game else {"games_played": 0, "games_won": 0}
 
-    config = DIFFICULTIES[chosen_difficulty]
+    if current_game:
+        real_board = current_game["real_board"]
+        visible_board = current_game["visible_board"]
+        board_cols = current_game["cols"]
+        board_rows = current_game["rows"]
+        config = current_game
+    else:
+        chosen_difficulty = select_difficulty()
+        clear_screen()
+        config = DIFFICULTIES[chosen_difficulty]
+        board_cols = config["cols"]
+        board_rows = config["rows"]
 
-    board_cols = config["cols"]
-    board_rows = config["rows"]
-    board_size = board_cols * board_rows
+        real_board, visible_board = init_game(config)
 
-    percentage = config["percent"]
+        save_game(
+            player_name, 
+            config["rows"], 
+            config["cols"],
+            real_board,
+            visible_board,
+            time.time())
 
-    mines_cnt = max(1, round(board_size * percentage))        
-
-    for i in range(board_cols):
-        for _ in range(board_rows):
-            real_board.append(SPACE)
-            visible_board.append(COVERED)
-
-    start_point = random_int(0, board_size - 1)
-    forbidden_points = get_adjacent_indices(start_point, board_rows, board_cols)
-    forbidden_points.append(start_point) 
-
-    allowed_indices = [i for i in range(board_size) if i not in forbidden_points]
-
-    mine_indices = random.sample(allowed_indices, mines_cnt)
-    for idx in mine_indices:
-        real_board[idx] = MINE
-
-
-    for i, cell in enumerate(real_board):
-        if cell == MINE:
-            continue
-
-        mines = count_adjacent_mines(i, real_board, board_rows, board_cols)
-
-        if mines > 0:
-            color = NUM_COLORS[mines]
-            real_board[i] = f"{color}{mines}{RESET}"
-        else:
-            real_board[i] = SPACE
-
-    flood_fill(start_point, real_board, visible_board, board_rows, board_cols) 
-
-    while True:
+    exit = False
+    while not exit:
         display_board(visible_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
+
+        print(f"{GRAY}Player: {player_name}{RESET}")
+        print(f"{GRAY}Use arrow keys to move, Enter to reveal, F to flag, q to exit.{RESET}")
+        print(f"{GRAY}Games played: {stats['games_played']}, Games won: {stats['games_won']}{RESET}")
 
         key = get_key()
 
@@ -87,23 +78,34 @@ def main():
         elif key == "ENTER":
             visible_board[cursor_idx] = real_board[cursor_idx]
 
-            if real_board[cursor_idx] == MINE:
+            if check_victory(real_board, visible_board):
+                display_board(real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
+                message = f"{GREEN}Victory is yours!!!{RESET}"
+                exit = True
+            elif check_defeat(real_board, visible_board):
+                display_board(real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
                 message = f"{RED}Ahhhhhhhhhhhhhhh{RESET}"
-                break
+                exit = True
             elif real_board[cursor_idx] != SPACE:
                 visible_board[cursor_idx] = real_board[cursor_idx]
             else:
                 flood_fill(cursor_idx, real_board, visible_board, board_rows, board_cols)
-
-            if (check_victory(real_board, visible_board)):
-                message = f"{GREEN}Victory is yours!!!{RESET}"
-                break
+                if check_victory(real_board, visible_board):
+                    display_board(real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
+                    message = f"{GREEN}Victory is yours!!!{RESET}"
+                    exit = True
 
         elif key == "ESC":
             message = f"{GRAY}Exiting...{RESET}"
-            break
+            exit = True
 
-    display_board(real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
+        save_game(
+            player_name, 
+            config["rows"], 
+            config["cols"],
+            real_board,
+            visible_board,
+            time.time())
 
     if message:
         print(f"\n{message}")
