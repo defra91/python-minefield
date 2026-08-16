@@ -35,5 +35,5 @@ jobs:
       - name: Run Linter
         run: uv run ruff check .
 
-      - name: Run Unit Tests
-        run: uv run pytest
+      - name: Run Unit Tests with Coverage
+        run: uv run pytest --cov=python_minefield --cov-fail-under=10
