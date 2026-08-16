@@ -1,0 +1,45 @@
+name: Continuous Deployment (Release)
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    name: Build & Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write 
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies & Test
+        run: |
+          uv sync --all-extras --dev
+          uv run ruff check .
+          uv run pytest --cov=python_minefield --cov-fail-under=10
+
+      - name: Build package artifacts
+        run: uv build
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
