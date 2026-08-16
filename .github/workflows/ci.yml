@@ -33,7 +33,7 @@ jobs:
         run: uv run ruff format --check .
 
       - name: Run Linter
-        name: uv run ruff check .
+        run: uv run ruff check .
 
       - name: Run Unit Tests
-        name: uv run pytest
+        run: uv run pytest
