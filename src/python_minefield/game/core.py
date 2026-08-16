@@ -2,11 +2,11 @@ import random
 import sys
 from collections import deque
 
-from .math import get_board_coords, NEIGHBORS_OFFSET
-from .math import random_int, get_adjacent_indices, get_board_coords
-from .config import FLAG, FLAG, MINE, NUM_COLORS, SPACE, COVERED, DIFFICULTIES
 from .colors import BOLD, CURSOR_STYLE, GRAY, RESET
+from .config import COVERED, DIFFICULTIES, FLAG, MINE, SPACE
+from .math import NEIGHBORS_OFFSET, get_adjacent_indices, get_board_coords, random_int
 from .terminal import get_key, hide_cursor, show_cursor
+
 
 def count_adjacent_mines(i, board, board_rows, board_cols):
     r, c = get_board_coords(i, board_cols)
@@ -20,6 +20,7 @@ def count_adjacent_mines(i, board, board_rows, board_cols):
             mine_cnt += board[neighbor_index] == MINE
 
     return mine_cnt
+
 
 def flood_fill(start_i, real_board, visible_board, board_rows, board_cols):
     queue = deque([start_i])
@@ -49,9 +50,10 @@ def flood_fill(start_i, real_board, visible_board, board_rows, board_cols):
                     visited.add(neighbor_idx)
                     queue.append(neighbor_idx)
 
+
 def select_difficulty() -> str:
     keys = list(DIFFICULTIES.keys())
-    cursor = 0 
+    cursor = 0
 
     while True:
         sys.stdout.write("\033[H\033[J")
@@ -79,6 +81,7 @@ def select_difficulty() -> str:
         elif action == "ENTER":
             return keys[cursor]
 
+
 def check_victory(real_board, visible_board) -> bool:
     for i, cell in enumerate(real_board):
         if cell != MINE:
@@ -87,14 +90,16 @@ def check_victory(real_board, visible_board) -> bool:
 
     return True
 
+
 def check_defeat(real_board, visible_board) -> bool:
     defeat = False
     for i, cell in enumerate(real_board):
         vcell = visible_board[i]
-        if (cell == MINE and vcell == MINE):
+        if cell == MINE and vcell == MINE:
             defeat = True
-        
+
     return defeat
+
 
 def get_player_name() -> str:
     show_cursor()
@@ -102,10 +107,11 @@ def get_player_name() -> str:
     hide_cursor()
     return player_name if player_name else "Player"
 
+
 def init_game(config):
     real_board = []
     visible_board = []
-    
+
     board_size = config["rows"] * config["cols"]
     mines_cnt = max(1, round(board_size * config["percent"]))
 
@@ -116,7 +122,7 @@ def init_game(config):
 
     start_point = random_int(0, board_size - 1)
     forbidden_points = get_adjacent_indices(start_point, config["rows"], config["cols"])
-    forbidden_points.append(start_point) 
+    forbidden_points.append(start_point)
 
     allowed_indices = [i for i in range(board_size) if i not in forbidden_points]
 
@@ -139,8 +145,14 @@ def init_game(config):
 
     return real_board, visible_board
 
+
 def chording(i, real_board, visible_board, rows, cols):
-    if (real_board[i] == SPACE) or (real_board[i] == MINE) or (visible_board[i] == COVERED) or (visible_board[i] == FLAG):
+    if (
+        (real_board[i] == SPACE)
+        or (real_board[i] == MINE)
+        or (visible_board[i] == COVERED)
+        or (visible_board[i] == FLAG)
+    ):
         return
 
     r, c = get_board_coords(i, rows)

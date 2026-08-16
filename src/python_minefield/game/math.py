@@ -13,14 +13,17 @@ NEIGHBORS_OFFSET = [
     (1, 1),
 ]
 
+
 def random_int(min, max):
     """Extracts and returns a random integer between the min and max"""
     return random.randint(min, max)
+
 
 def get_board_coords(index: int, num_cols: int) -> tuple[int, int]:
     row = index // num_cols
     col = index % num_cols
     return row, col
+
 
 def get_adjacent_indices(idx: int, rows: int, cols: int) -> list[int]:
     r = idx // cols
@@ -39,6 +42,7 @@ def get_adjacent_indices(idx: int, rows: int, cols: int) -> list[int]:
                 adjacent.append(nr * cols + nc)
 
     return adjacent
+
 
 def is_float(s: str) -> bool:
     try:

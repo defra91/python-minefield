@@ -1,15 +1,17 @@
-# game/storage.py 
+# game/storage.py
 
-from pathlib import Path
 import json
 import time
+from pathlib import Path
 
 from .core import check_defeat, check_victory
 
-SAVES_DIR = Path.home() / ".python_minefield" / "saves"    
+SAVES_DIR = Path.home() / ".python_minefield" / "saves"
+
 
 def ensure_saves_dir_exists():
     SAVES_DIR.mkdir(parents=True, exist_ok=True)
+
 
 def get_player_filepath(player_name: str) -> Path:
     safe_name = (
@@ -21,13 +23,14 @@ def get_player_filepath(player_name: str) -> Path:
         safe_name = "default_player"
     return SAVES_DIR / f"{safe_name}.json"
 
+
 def save_game(
     player_name: str,
     rows: int,
     cols: int,
     real_board: list[str],
     visible_board: list[str],
-    start_time: float
+    start_time: float,
 ):
     ensure_saves_dir_exists()
     filepath = get_player_filepath(player_name)
@@ -70,6 +73,7 @@ def save_game(
 
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
+
 
 def load_game(player_name: str) -> dict | None:
     filepath = get_player_filepath(player_name)

@@ -1,20 +1,20 @@
 # game/config.py
 
-from .colors import RED, GRAY, RESET, BLUE_FLAG
-    
-SPACE        = f"{GRAY} {RESET}"
-COVERED      = f"{GRAY}■{RESET}"
-FLAG         = f"{RED}⚑{RESET}"
-MINE         = f"{RED}*{RESET}"
+from .colors import GRAY, RED, RESET
+
+SPACE = f"{GRAY} {RESET}"
+COVERED = f"{GRAY}■{RESET}"
+FLAG = f"{RED}⚑{RESET}"
+MINE = f"{RED}*{RESET}"
 
 NUM_COLORS = {
-    1: "\033[94m", 
+    1: "\033[94m",
     2: "\033[92m",
-    3: "\033[93m", 
+    3: "\033[93m",
     4: "\033[34m",
     5: "\033[95m",
     6: "\033[96m",
-    7: "\033[33m", 
+    7: "\033[33m",
     8: "\033[97m",
 }
 

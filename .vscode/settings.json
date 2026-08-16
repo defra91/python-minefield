@@ -1,0 +1,9 @@
+{
+  // Mostra una riga verticale visiva a 88 caratteri (default Ruff) e a 100
+  "editor.rulers": [88],
+
+  // Opzionale: applica il delimitatore SOLO ai file Python
+  "[python]": {
+    "editor.rulers": [88]
+  }
+}

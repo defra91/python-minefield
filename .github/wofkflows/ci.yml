@@ -1,0 +1,39 @@
+# Continuous Integration workflow for GitHub Actions
+
+name: CI Workflow
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  test:
+    name: Lint, Format & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@5
+        with:
+          enable-cache: true
+          version: "latest"
+
+      - name: Setup Python
+        run: uv python install 3.12
+
+      - name: Install Dependencies
+        run: uv sync --all-extras --dev
+
+      - name: Check Code Formatting
+        run: uv run ruff format --check .
+
+      - name: Run Linter
+        name: uv run ruff check .
+
+      - name: Run Unit Tests
+        name: uv run pytest

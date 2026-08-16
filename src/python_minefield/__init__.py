@@ -1,21 +1,21 @@
 import time
 
-from .game.config import COVERED, DIFFICULTIES, FLAG, SPACE, MINE
+from .game.board import display_board
+from .game.colors import GRAY, GREEN, RED, RESET
+from .game.config import COVERED, DIFFICULTIES, FLAG, MINE, SPACE
 from .game.core import (
-    init_game,
-    select_difficulty,
-    check_victory,
     check_defeat,
+    check_victory,
+    chording,
     flood_fill,
     get_key,
     get_player_name,
-    chording,
+    init_game,
+    select_difficulty,
 )
-from .game.storage import save_game, load_game
-
+from .game.storage import load_game, save_game
 from .game.terminal import clear_screen, hide_cursor, show_cursor
-from .game.colors import GRAY, GREEN, RED, RESET
-from .game.board import display_board
+
 
 def main():
     clear_screen()
@@ -49,20 +49,27 @@ def main():
         real_board, visible_board = init_game(config)
 
         save_game(
-            player_name, 
-            config["rows"], 
+            player_name,
+            config["rows"],
             config["cols"],
             real_board,
             visible_board,
-            time.time())
+            time.time(),
+        )
 
     exit = False
     while not exit:
         display_board(visible_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
 
         print(f"{GRAY}Player: {player_name}{RESET}")
-        print(f"{GRAY}Use arrow keys to move, Enter to reveal, F to flag, q to exit.{RESET}")
-        print(f"{GRAY}Games played: {stats['games_played']}, Games won: {stats['games_won']}{RESET}")
+        print(
+            f"{GRAY}Use arrow keys to move, Enter to reveal, "
+            f"F to flag, q to exit.{RESET}"
+        )
+        print(
+            f"{GRAY}Games played: {stats['games_played']}, "
+            f"Games won: {stats['games_won']}{RESET}"
+        )
 
         key = get_key()
 
@@ -88,16 +95,22 @@ def main():
             visible_board[cursor_idx] = real_board[cursor_idx]
 
             if real_board[cursor_idx] == SPACE:
-                flood_fill(cursor_idx, real_board, visible_board, board_rows, board_cols)
+                flood_fill(
+                    cursor_idx, real_board, visible_board, board_rows, board_cols
+                )
             elif real_board[cursor_idx] != MINE:
                 chording(cursor_idx, real_board, visible_board, board_rows, board_cols)
 
             if check_victory(real_board, visible_board):
-                display_board(real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
+                display_board(
+                    real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx
+                )
                 message = f"{GREEN}Victory is yours!!!{RESET}"
                 exit = True
             elif check_defeat(real_board, visible_board):
-                display_board(real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
+                display_board(
+                    real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx
+                )
                 message = f"{RED}Ahhhhhhhhhhhhhhh{RESET}"
                 exit = True
 
@@ -106,15 +119,17 @@ def main():
             exit = True
 
         save_game(
-            player_name, 
-            config["rows"], 
+            player_name,
+            config["rows"],
             config["cols"],
             real_board,
             visible_board,
-            time.time())
+            time.time(),
+        )
 
     if message:
         print(f"\n{message}")
+
 
 if __name__ == "__main__":
     hide_cursor()
