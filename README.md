@@ -1,5 +1,7 @@
 # Python Minefield
 
+[![CI Workflow](https://github.com/defra91/python-minefield/actions/workflows/ci.yml/badge.svg)](https://github.com/defra91/python-minefield/actions/workflows/ci.yml)
+
 This project helped me to face the boring days in the summer, while the temperature outside was really too hot to do anything else. 
 
 I wanted to learn Python from scratch, so I decided to create a simple game, which is a clone of the classic Minesweeper.
