@@ -1,6 +1,6 @@
 import time
 
-from .game.board import display_board
+from .game.board import render_board
 from .game.colors import GRAY, GREEN, RED, RESET
 from .game.config import COVERED, DIFFICULTIES, FLAG, MINE, SPACE
 from .game.core import (
@@ -59,7 +59,7 @@ def main():
 
     exit = False
     while not exit:
-        display_board(visible_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
+        render_board(visible_board, board_cols, board_rows, cell_w, cell_h, cursor_idx)
 
         print(f"{GRAY}Player: {player_name}{RESET}")
         print(
@@ -102,13 +102,13 @@ def main():
                 chording(cursor_idx, real_board, visible_board, board_rows, board_cols)
 
             if check_victory(real_board, visible_board):
-                display_board(
+                render_board(
                     real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx
                 )
                 message = f"{GREEN}Victory is yours!!!{RESET}"
                 exit = True
             elif check_defeat(real_board, visible_board):
-                display_board(
+                render_board(
                     real_board, board_cols, board_rows, cell_w, cell_h, cursor_idx
                 )
                 message = f"{RED}Ahhhhhhhhhhhhhhh{RESET}"

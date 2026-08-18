@@ -22,7 +22,16 @@ def count_adjacent_mines(i, board, board_rows, board_cols):
     return mine_cnt
 
 
-def flood_fill(start_i, real_board, visible_board, board_rows, board_cols):
+def flood_fill(
+    start_i,
+    real_board,
+    visible_board,
+    board_rows,
+    board_cols,
+    fill_value=SPACE,
+    covered_value=COVERED,
+):
+
     queue = deque([start_i])
 
     visited = {start_i}
@@ -30,7 +39,7 @@ def flood_fill(start_i, real_board, visible_board, board_rows, board_cols):
     while queue:
         i = queue.popleft()
 
-        visible_board[i] = real_board[i]
+        visible_board[i] = fill_value
 
         if real_board[i] != SPACE:
             continue
@@ -45,7 +54,7 @@ def flood_fill(start_i, real_board, visible_board, board_rows, board_cols):
 
                 if (
                     neighbor_idx not in visited
-                    and visible_board[neighbor_idx] == COVERED
+                    and visible_board[neighbor_idx] == covered_value
                 ):
                     visited.add(neighbor_idx)
                     queue.append(neighbor_idx)

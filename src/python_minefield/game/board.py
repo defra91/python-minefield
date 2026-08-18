@@ -3,21 +3,23 @@
 import sys
 
 from . import terminal as terminal
-from .colors import BLUE, BOLD, CURSOR_STYLE, GRAY, LIGHT_GRAY, RED, RESET
+from .colors import CURSOR_STYLE, GRAY, RESET
 from .config import MINE, NUM_COLORS, SPACE
 from .math import is_float
 
 L_CORNER_TOP = f"{GRAY}╔{RESET}"
 L_CORNER_BOTTOM = f"{GRAY}╚{RESET}"
-BORDER_HORIZ = f"{GRAY}═{RESET}"
-DIVIDER_TOP = f"{GRAY}╦{RESET}"
-DIVIDER_BOTTOM = f"{GRAY}╩{RESET}"
 R_CORNER_TOP = f"{GRAY}╗{RESET}"
 R_CORNER_BOTTOM = f"{GRAY}╝{RESET}"
+
+BORDER_HORIZ = f"{GRAY}═{RESET}"
+BORDER_VERT = f"{GRAY}║{RESET}"
+
+DIVIDER_TOP = f"{GRAY}╦{RESET}"
+DIVIDER_BOTTOM = f"{GRAY}╩{RESET}"
 DIVIDER_MID = f"{GRAY}╬{RESET}"
 L_DIVIDER_MID = f"{GRAY}╠{RESET}"
 R_DIVIDER_MID = f"{GRAY}╣{RESET}"
-BORDER_VERT = f"{GRAY}║{RESET}"
 
 
 def board_row_top(cell_cnt, cell_size):
@@ -52,28 +54,22 @@ def board_row_bottom(cell_cnt, cell_size):
     return row
 
 
-def board_row_central(cell_cnt, cell_size, contents=[]):
+def board_row_central(cell_size, contents=None, default_cell_value=SPACE):
+    if contents is None:
+        contents = []
+
     row = BORDER_VERT
 
     cell_size = terminal.normalize_cell_size(cell_size)
 
-    for i in range(cell_cnt):
+    for i, cell in enumerate(contents):
         for j in range(cell_size):
             if j == (cell_size - 1) / 2:
-                c = contents[i]
-
-                if c == "X":
-                    c = f"{RED}{BOLD}X{RESET}"
-                elif c == "O":
-                    c = f"{BLUE}{BOLD}O{RESET}"
-                else:
-                    c = f"{LIGHT_GRAY}{c}{RESET}"
-
-                row += c
+                row += cell
             else:
-                row += SPACE
+                row += default_cell_value
 
-        if i < cell_cnt - 1:
+        if i < len(contents) - 1:
             row += BORDER_VERT
 
     row += BORDER_VERT
@@ -136,11 +132,18 @@ def display_board(board, cols, rows, cell_w, cell_h, cursor_idx):
 
                     index += 1
 
-            row = board_row_central(cols, cell_w, contents)
+            row = board_row_central(cell_w, contents)
             buffer.append(row.center(width + 18) + "\n")
 
     bottom = board_row_bottom(cols, cell_w)
     buffer.append(bottom.center(width + 18) + "\n\n")
 
-    sys.stdout.write("".join(buffer))
+    result = "".join(buffer)
+    return result
+
+
+def render_board(board, cols, rows, cell_w, cell_h, cursor_idx):
+    buffer = display_board(board, cols, rows, cell_w, cell_h, cursor_idx)
+
+    sys.stdout.write(buffer)
     sys.stdout.flush()

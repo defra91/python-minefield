@@ -35,3 +35,6 @@ ignore = []
 
 [tool.ruff.format]
 quote-style = "double"
+
+[tool.pytest.ini_options]
+addopts = "--cov=python_minefield --cov-report=term-missing --cov-report=html"
