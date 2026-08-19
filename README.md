@@ -7,7 +7,7 @@
 
 A lightweight and fun **Minesweeper clone** written in Python.
 
-[![Python Minefield Demo](./images/demo.gif)](./images/demo.gif)
+![Python Minefield Demo](https://raw.githubusercontent.com/defra91/python-minefield/main/images/demo.gif)
 
 ## About The Project
 
