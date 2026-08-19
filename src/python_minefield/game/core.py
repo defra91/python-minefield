@@ -31,19 +31,18 @@ def flood_fill(
     fill_value=SPACE,
     covered_value=COVERED,
 ):
-
     queue = deque([start_i])
-
     visited = {start_i}
 
     while queue:
         i = queue.popleft()
 
-        visible_board[i] = fill_value
+        visible_board[i] = real_board[i]
 
-        if real_board[i] != SPACE:
+        if real_board[i] != fill_value:
             continue
 
+        # 3. Se la cella è uno spazio vuoto, continua l'esplorazione dei vicini
         r, c = get_board_coords(i, board_cols)
 
         for dr, dc in NEIGHBORS_OFFSET:
