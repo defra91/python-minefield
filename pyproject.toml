@@ -1,6 +1,6 @@
 [project]
 name = "python-minefield"
-version = "1.1.1"
+version = "1.1.2"
 description = "Minefield game written in Python and with console interface."
 readme = "README.md"
 
