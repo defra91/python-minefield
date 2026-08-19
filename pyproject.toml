@@ -3,7 +3,16 @@ name = "python-minefield"
 version = "1.0.0"
 description = "Minefield game written in Python and with console interface."
 readme = "README.md"
+
 requires-python = ">=3.14"
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: POSIX :: Linux",
+    "License :: OSI Approved :: MIT License",
+]
+
 dependencies = [
     "pytest>=9.1.1",
     "ruff>=0.16.3",
